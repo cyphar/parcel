@@ -9,6 +9,10 @@ lives). As a result, distributing such images out-of-band requires working
 around this system. My intent is that this work could lead to a distribution
 system that is as unopinionated as possible.
 
+A [description of the design](DESIGN.md) has been written up, in the hopes that
+it may be combined with other ideas and included in the OCI image
+specification.
+
 ### License ###
 
 `parcel` is licensed under the terms of the Apache 2.0 license.
