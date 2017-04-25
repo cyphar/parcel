@@ -96,8 +96,8 @@ implementation MUST restart the alias resolution process with the new value of
 
 With a fully resolved `<authority>` value, an explorer MUST then attempt to
 access and parse the contents of the URL (as a [discovery object][discovery-json])
-`https://<authority>/.well-known/com.cyphar.opencontainers-parcel` (using [HTTP
-over TLS][rfc-7230-s2.7.2]). If an error occurred while attempting to
+`https://<authority>/.well-known/cyphar.opencontainers.parcel.v0.json` (using
+[HTTP over TLS][rfc-7230-s2.7.2]). If an error occurred while attempting to
 **access** the URL, the explorer MAY attempt to resolve additional out-of-spec
 URLs (though it MUST inform the user and MUST NOT attempt additional resolution
 if **access**ing the URL did not result in error).
