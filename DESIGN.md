@@ -108,6 +108,7 @@ object][discovery-json] is the following:
 
 ```json
 {
+	"parcelVersion": "0.0.0",
     "disturi": {
         "template": "/{parcel.version}/{parcel.discovery.name}"
     }
@@ -147,6 +148,12 @@ the implementation.
 The URL defined in `disturi` MUST be computed with at least the `parcel` and
 `parcel.discovery` namespaces of [variables][uri-template-variables] defined.
 
+* **`parcelVersion`** (string, REQUIRED)
+
+  The [version of this specification][version] implemented by the server. An
+  implementation SHOULD emit a warning if it encounters an unsupported version,
+  and MAY emit an error.
+
 * **`disturi`** (object ([URI template][uri-template]), REQUIRED)
 
   The template for the [distribution URI-reference][distribution-url], used in
@@ -155,9 +162,10 @@ The URL defined in `disturi` MUST be computed with at least the `parcel` and
   defined by [RFC 3986 &sect; 4.1][rfc-3986-s4.1]), the explorer MUST emit an
   error.
 
+[uri-template-variables]: #uri-template-variables
+[version]: #version
 [distribution-url]: #distribution-url
 [uri-template]: #uri-templates
-[uri-template-variables]: #uri-template-variables
 [rfc-3986-s4.1]: https://tools.ietf.org/html/rfc3986#section-4.1
 
 ### Distribution URL ###
@@ -206,6 +214,12 @@ the implementation.
 The URLs defined in `indexuris` and `bloburis` MUST be computed with at least
 the `parcel`, `parcel.fetch` (with the exception of `parcel.fetch.blob`), and
 `parcel.discovery` namespaces of [variables][uri-template-variables] defined.
+
+* **`parcelVersion`** (string, REQUIRED)
+
+  The [version of this specification][version] implemented by the server. An
+  implementation SHOULD emit a warning if it encounters an unsupported version,
+  and MAY emit an error.
 
 * **`indexuris`** (array of object ([URI template][uri-template]), REQUIRED)
 
