@@ -85,12 +85,14 @@ If any step successfully modifies the value of `<authority>` then the
 implementation MUST restart the alias resolution process with the new value of
 `<authority>`.
 
-1. The explorer MUST attempt to resolve `opencontainers-parcel.cyphar.<authority>`
-   through the [Domain Name System][rfc-1035]. If the name successfully
-   resolves to a `CNAME` or `TXT` record then the explorer MUST treat the value
-   of the record as though `<authority>` was the value of the record. If the
-   `<authority>` is not a valid `authority` value as defined by [RFC 3986
-   &sect; 3][rfc-3986-s3], then the explorer MUST emit an error.
+1. The explorer MUST attempt to resolve `<authority>` through the [Domain Name
+   System][rfc-1035]. If the name successfully resolves to a `TXT` record of
+   the form `cyphar.opencontainers.parcel.v0=<authority>;` then the explorer
+   MUST treat the value of the record as though `<authority>` was the value in
+   the `TXT` record. If the `<authority>` is not a valid `authority` value as
+   defined by [RFC 3986 &sect; 3][rfc-3986-s3], then the explorer MUST emit an
+   error. If there is more than one `TXT` record with the given format, the
+   explorer MAY choose any valid entry to follow and SHOULD emit a warning.
 
 With a fully resolved `<authority>` value, an explorer MUST then attempt to
 access and parse the contents of the URL (as a [discovery object][discovery-json])
