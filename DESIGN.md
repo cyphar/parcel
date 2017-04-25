@@ -109,12 +109,7 @@ object][discovery-json] is the following:
 ```json
 {
     "disturi": {
-        "template": "/{parcel.version}/{parcel.discovery.name}",
-        "variables": [
-            "parcel.version",
-            "parcel.discovery.authority",
-            "parcel.discovery.name"
-        ]
+        "template": "/{parcel.version}/{parcel.discovery.name}"
     }
 }
 ```
@@ -304,10 +299,9 @@ incomplete).
 *A URI template is used to allow for more generic descriptions of URLs without
 requiring that the server enumerate all possible URLs.*
 
-A URI template is defined as a JSON object, containing the template string and
-the set of variables that are to be substituted in the template. Note that
-clients which retrieve URI template files MUST NOT assume that the contents of
-the URI template are constant between distinct retrievals.
+A URI template is defined as a JSON object, containing the template string.
+Note that clients which retrieve URI template files MUST NOT assume that the
+contents of the URI template are constant between distinct retrievals.
 
 The following fields are defined by this specification, and MUST at least be
 implemented. Additional fields MAY be supported by implementations, however if
@@ -316,11 +310,6 @@ the implementation.
 
 * **`template`** (string, REQUIRED) specifies the template string to be
   expanded, as defined by [RFC 6570][rfc-6570].
-
-* **`variables`** (array of strings, REQUIRED) specifies the set of variable
-  names that MUST be expanded in the template string. If there are any
-  variables defined in the template string which are not in the `variables`
-  array they MUST NOT be expanded in the resultant string.
 
 <!-- TODO: Do we need a "default" string->string map? -->
 
