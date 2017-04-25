@@ -443,6 +443,10 @@ object][discovery-json], it MUST use the values defined as the default
   The name of the digest algorithm specified by the [discovery
   object][discovery-json].
 
+The following variables are defined from the [blob retrieval
+stage][image-fetching] stage onwards. An implementation MUST define these
+variables when fetching a `bloburi`.
+
 * **`parcel.fetch.blob.algorithm`** (string, REQUIRED)
 
   The name of the digest algorithm used for producing the digest of an OCI
@@ -460,6 +464,7 @@ object][discovery-json], it MUST use the values defined as the default
 [version]: #version
 [image-discovery]: #image-discovery
 [discovery-json]: #discovery-json
+[image-fetching]: #image-blob-retrieval
 [oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/descriptor.md
 [oci-digests]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/descriptor.md#digests-and-verification
 
