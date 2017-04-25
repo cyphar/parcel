@@ -32,17 +32,23 @@ var DiscoveryTXTFormat = regexp.MustCompile(`^cyphar\.opencontainers\.parcel\.v0
 // URI, which can be used to resolve and access the discovery object. Note that
 // "default authority" handling is not implemented in Resolve, it must be
 // handled by the caller.
+//
+// If an error is encountered during the resolution of the TXT entries for the
+// DNS hostname, alias resolution is halted and the currently resolved alias is
+// returned (with no error set). If there is more than one valid discovery TXT
+// record, Resolve will choose a random record.
 func Resolve(name string) (string, error) {
 	if !strings.Contains(name, "/") {
 		// Callers have to prepend authorities.
 		return "", fmt.Errorf("discovery resolve: no authority specified")
 	}
 
-	// Parse the URL.
-	discoveryURL, err := url.Parse("parcel://" + name)
+	// Parse the URI. There shouldn't be a scheme.
+	discoveryURL, err := url.Parse("//" + name)
 	if err != nil {
 		return "", fmt.Errorf("discovery resolve %s: invalid discovery URI: %v", name, err)
 	}
+	// Split the host[:port].
 	host := discoveryURL.Host
 	port := ""
 	if strings.Contains(host, ":") {
@@ -59,7 +65,7 @@ func Resolve(name string) (string, error) {
 
 		txts, err := net.LookupTXT(host)
 		if err != nil {
-			// Resolution is finished.
+			// Resolution is finished. This ignores resolution errors, but we don't care because the caller will have to hit
 			break
 		}
 
@@ -85,6 +91,6 @@ func Resolve(name string) (string, error) {
 	}
 
 	discoveryURL.Host = host
-	resolved := strings.TrimPrefix(discoveryURL.String(), "parcel://")
+	resolved := strings.TrimPrefix(discoveryURL.String(), "//")
 	return resolved, nil
 }
