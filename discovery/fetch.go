@@ -45,25 +45,25 @@ func toDiscoveryURL(name string) (string, error) {
 // failed.
 //
 // TODO: Handle the "default object".
-func Fetch(name string) (parcelv0.Discovery, error) {
+func Fetch(name string) (string, parcelv0.Discovery, error) {
 	discoveryURL, err := toDiscoveryURL(name)
 	if err != nil {
-		return parcelv0.Discovery{}, err
+		return "", parcelv0.Discovery{}, err
 	}
 
 	resp, err := http.Get(discoveryURL)
 	if err != nil {
-		return parcelv0.Discovery{}, err
+		return "", parcelv0.Discovery{}, err
 	}
 	defer resp.Body.Close()
 
 	var discovery parcelv0.Discovery
 	if err := json.NewDecoder(resp.Body).Decode(&discovery); err != nil {
-		return parcelv0.Discovery{}, err
+		return "", parcelv0.Discovery{}, err
 	}
 	if discovery.ParcelVersion != parcelv0.Version {
 		// TODO: Make this more sane.
-		return parcelv0.Discovery{}, fmt.Errorf("discovery fetch: unknown version: %s", discovery.ParcelVersion)
+		return "", parcelv0.Discovery{}, fmt.Errorf("discovery fetch: unknown version: %s", discovery.ParcelVersion)
 	}
-	return discovery, nil
+	return discoveryURL, discovery, nil
 }
