@@ -36,20 +36,86 @@ specifying the fields of JSON objects a similar style to the OCI
 
 [image-spec]: https://github.com/opencontainers/image-spec
 [docker-distribution]: https://github.com/docker/distribution
-[rfc-2119]: https://www.ietf.org/rfc/rfc2119.txt
+[rfc-2119]: https://tools.ietf.org/html/rfc2119
 [ecma-404]: https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
 [runtime-spec]: https://github.com/opencontainers/runtime-spec
 
 ## Implementation ##
 
-The following sections describe in detail the steps required to go from the
-[discovery stage][image-discovery] through parsing of [distribution
-URLs][distribution-url] to arrive at OCI image [blob and index
-fetching][image-fetching].
+The following sections describe in detail the steps required for an
+implementation of this specification to go from [image discovery
+(stage0)][stage0], through parsing of [template descriptors][descriptors] and
+[distribution objects (stage1)][stage1], to arrive at [OCI image blob and index
+fetching (stage2)][stage2].
 
-[image-discovery]: #image-discovery
-[distribution-url]: #distribution-url
-[image-fetching]: #image-blob-retrieval
+[stage0]: #image-discovery
+[descriptors]: #template-descriptors
+[stage1]: #distribution-objects
+[stage2]: #image-blob-retrieval
+
+### Template Descriptors ###
+
+*A very important property of parcel is that it should be possible to
+statically describe any nested structure of redirects, as well as opening the
+door to future extensions. This data structure is heavily inspired by the OCI
+[image-spec descriptor objects][oci-descriptor].*
+
+The following object MUST be interpreted as a [JSON object][ecma-404].
+
+The following fields are defined by this specification, and MUST at least be
+implemented. Additional fields MAY be supported by implementations, however if
+an additional field is not supported by an implementation it MUST be ignored by
+the implementation.
+
+* **`mediaType`** (string, REQUIRED)
+
+  Th media type of the referenced content. Values MUST comply with [RFC
+  6838][rfc-6838], including the [naming requirements in &sect;
+  4.2][rfc-6838-s4.2].
+
+  Note that this document defines an [opaque MIME type][opaque-mime].
+
+* **`templates`** (array of strings, REQUIRED)
+
+  The list of URI templates from which this object MUST be downloaded. Values
+  MUST comply with [RFC 6570][rfc-6570] and MAY contain variables [defined by
+  this specification][uri-template-variables]. If the
+
+If a template descriptor references another template descriptor, an
+implementation MUST retrieve the referenced template descriptor and MUST
+resolve it as though it were the original descriptor. Implementations SHOULD
+place a limit on the number of references to be resolved, to avoid
+denial-of-service and amplification attacks.
+
+When referencing this object, the MIME type is defined to be
+`application/vnd.parcel.template-descriptor.v0+json`.
+
+[oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0/descriptor.md
+[ecma-404]: https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
+[rfc-6838]: https://tools.ietf.org/html/rfc6838
+[rfc-6838-s4.2]: https://tools.ietf.org/html/rfc6838#section-4.2
+[opaque-mime]: #opaque-mime
+[rfc-6570]: https://tools.ietf.org/html/rfc6570
+[uri-template-variables]: #uri-template-variables
+
+#### Opaque MIME ####
+
+*[Template descriptors][template-descriptors] allow for arbitrary blob URLs to
+be encoded in a single descriptor. In certain cases, this may mean that the
+MIME type of a particular URI template is not well-defined. This section
+describes a special-purpose MIME type that is used in this case.*
+
+`application/vnd.parcel.opaque.v0` is an [RFC 6838][rfc-6838] compliant MIME
+type that represents a blob whose MIME type MUST be derived from alternative
+sources. If an implementation cannot determine the MIME type through
+alternative means before retrieving the content, it MUST emit an error.
+
+Implementations SHOULD NOT use opaque MIME types except in cases where required
+by this specification and MAY emit an error if one is encountered outside of
+the scope of this specification.
+
+[template-descriptors]: #template-descriptors
+[rfc-6838]: https://tools.ietf.org/html/rfc6838
 
 ### Image Discovery ###
 
@@ -257,7 +323,7 @@ the `parcel`, `parcel.fetch` (with the exception of `parcel.fetch.blob`), and
 [uri-template]: #uri-templates
 [uri-template-variables]: #uri-template-variables
 [rfc-3986-s4.1]: https://tools.ietf.org/html/rfc3986#section-4.1
-[oci-image-index]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/image-index.md
+[oci-image-index]: https://github.com/opencontainers/image-spec/blob/v1.0.0/image-index.md
 
 ### Image Blob Retrieval ###
 
@@ -304,9 +370,9 @@ incomplete).
 [rfc-3986-s4.1]: https://tools.ietf.org/html/rfc3986#section-4.1
 [rfc-3986-s5]: https://tools.ietf.org/html/rfc3986#section-5
 [known-schemas]: #known-schemas
-[oci-image-mediatype]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/media-types.md
-[oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/descriptor.md
-[oci-image-index]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/image-index.md
+[oci-image-mediatype]: https://github.com/opencontainers/image-spec/blob/v1.0.0/media-types.md
+[oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0/descriptor.md
+[oci-image-index]: https://github.com/opencontainers/image-spec/blob/v1.0.0/image-index.md
 
 <!-- ### Example ### -->
 
@@ -470,8 +536,8 @@ variables when fetching a `bloburi`.
 [image-discovery]: #image-discovery
 [discovery-json]: #discovery-json
 [image-fetching]: #image-blob-retrieval
-[oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/descriptor.md
-[oci-digests]: https://github.com/opencontainers/image-spec/blob/v1.0.0-rc5/descriptor.md#digests-and-verification
+[oci-descriptor]: https://github.com/opencontainers/image-spec/blob/v1.0.0/descriptor.md
+[oci-digests]: https://github.com/opencontainers/image-spec/blob/v1.0.0/descriptor.md#digests-and-verification
 
 ### Known Schemes ###
 
